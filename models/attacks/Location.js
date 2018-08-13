@@ -30,7 +30,6 @@ class Location {
       if (key in propsToKeep) location[propsToKeep[key]] = value;
     });
     Object.assign(this, location);
-    console.log(this);
   }
 }
 
