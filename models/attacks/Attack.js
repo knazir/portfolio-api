@@ -15,6 +15,16 @@ class Attack {
     return types;
   }
 
+  static parseAddress(log) {
+    if (regexes.invalidUserRegex.test(log)) {
+      return regexes.invalidUserRegex.exec(log)[2];
+    } else if (regexes.failedConnectionRegex.test(log)) {
+      return regexes.failedConnectionRegex.exec(log)[1];
+    } else {
+      throw new Error(`Attempted to parse invalid attack log: ${log}`)
+    }
+  }
+
   static isValidAttackLog(log) {
     return regexes.invalidUserRegex.test(log) || regexes.failedConnectionRegex.test(log);
   }

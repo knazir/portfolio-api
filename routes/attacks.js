@@ -6,6 +6,8 @@ const router = express.Router();
 
 const Attack = require("../models/attacks/Attack");
 
+const attackCache = {};
+
 // parsed entries will be stored and updated here
 let attackData = {
   attacks: [],
@@ -17,7 +19,15 @@ function loadEventLogs() {
     if (err) return debug(`Encountered error reading file ${process.env.sshAuthLog}: ${err}`);
     attackData.attacks = logs.split("\n")
       .filter(log => Attack.isValidAttackLog(log))
-      .map(log => new Attack(log));
+      .map(log => {
+        const ipAddress = Attack.parseAddress(log);
+        let attack = attackCache[ipAddress];
+        if (!attack) {
+          attack = new Attack(log);
+          attackCache[ipAddress] = attack;
+        }
+        return attack;
+      });
     attackData.lastUpdated = new Date();
   });
 }
